@@ -10,6 +10,7 @@ import (
 	k8 "github.com/limike954/agent-trajectory-data-00019/cmd/diff/client/kubernetes"
 	dt "github.com/limike954/agent-trajectory-data-00019/cmd/diff/renderer/types"
 	v1 "github.com/crossplane/function-sdk-go/proto/v1"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	un "k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -254,6 +255,10 @@ func (p *RequirementsProvider) processNameSelector(ctx context.Context, selector
 		"namespace", ns)
 
 	resource, err := p.client.GetResource(ctx, gvk, ns, name)
+	if apierrors.IsNotFound(err) {
+		return nil, false, nil
+	}
+
 	if err != nil {
 		return nil, false, errors.Wrapf(err, "cannot get referenced resource %s/%s", ns, name)
 	}

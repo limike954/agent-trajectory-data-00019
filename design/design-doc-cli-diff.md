@@ -680,6 +680,9 @@ The `RequirementsProvider` handles:
 - Fetching resources by name or label selector, scoped to the XR's namespace where appropriate
 - Loading EnvironmentConfigs as a baseline available to every render
 
+A by-name selector that does not match an existing resource resolves to no resource without failing the render. Other
+lookup failures, including discovery, authorization, and transport errors, remain fatal.
+
 (Claim-to-XR synthesis for new claims is not a `RequirementsProvider` responsibility — it happens in
 `DefaultDiffProcessor.resolveBackingXRForClaim` and delegates to upstream's `ConvertClaimToXR`. See §7.1.)
 
@@ -1291,7 +1294,8 @@ func (p *DefaultDiffProcessor) RenderToStableState(
 The loop is bounded by `MaxRenderIterations` (configurable via `--max-iterations`). The default-mode termination
 criterion is "no new requirements were discovered on this iteration"; the eventual-state termination criterion is "no
 new composed resources appeared and the Ready set has not changed". Both modes share the same body, with the
-`synthesizeReady` flag selecting between them.
+`synthesizeReady` flag selecting between them. A `matchName` selector whose Kubernetes lookup returns `NotFound`
+contributes no resource and no error; every other selector-resolution failure aborts the render.
 
 ##### 9.5.6.3 Composed-Resource Namespace Handling
 
