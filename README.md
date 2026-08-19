@@ -242,6 +242,9 @@ The tool performs the following steps:
 7. **Calculate diffs** by comparing rendered resources against current cluster state
 8. **Display formatted output** showing what would change
 
+A named requirement that does not exist resolves to no resource rather than failing the diff. Other lookup errors still
+fail the operation.
+
 ## Function Credentials
 
 Some Crossplane functions require credentials to operate (e.g., `function-msgraph` for Microsoft Graph API access). These credentials are typically referenced in composition pipelines via `credentials[].secretRef`.
@@ -785,4 +788,3 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for complete guidelines and [CODE_OF_COND
 ## License
 
 This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
-
